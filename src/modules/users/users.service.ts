@@ -10,6 +10,12 @@ import { RegisterUserDto } from './dtos/register-user.dto';
 import { Hasher } from '../..//utils/hasher';
 import { LoginUserDto } from './dtos/login-user.dto';
 
+
+function validateEmail(email: string): boolean {
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  return emailRegex.test(email);
+}
+
 @Injectable()
 export class UsersService {
   constructor(
@@ -22,6 +28,11 @@ export class UsersService {
     if (!existEmail) {
       throw new InternalServerErrorException(
         `The email address is already in use`,
+      );
+    }
+    if (!validateEmail(registerUserDto.email)) {
+      throw new InternalServerErrorException(
+        `invalid email`,
       );
     }
     const queryRunner = this.dataSource.createQueryRunner();

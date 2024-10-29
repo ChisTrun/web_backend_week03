@@ -5,9 +5,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from './config/configuration';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import {User} from './modules/users/user.entity'
-import { UsersController } from './modules/users/users.controller';
 import { UsersModule } from './modules/users/users.module';
-import { Hasher } from './utils/hasher';
 
 @Module({
   imports: [
