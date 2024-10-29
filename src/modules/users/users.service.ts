@@ -7,7 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
 import { User } from './user.entity';
 import { RegisterUserDto } from './dtos/register-user.dto';
-import { Hasher } from 'src/utils/hasher';
+import { Hasher } from '../..//utils/hasher';
 import { LoginUserDto } from './dtos/login-user.dto';
 
 @Injectable()
