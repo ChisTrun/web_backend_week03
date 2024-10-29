@@ -27,6 +27,7 @@
     "@nestjs/typeorm": "^10.0.2",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
     "js-yaml": "^4.1.0",
     "mysql2": "^3.11.3",
     "reflect-metadata": "^0.2.0",
