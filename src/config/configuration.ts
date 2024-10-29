@@ -5,8 +5,9 @@ import { join } from 'path';
 const YAML_CONFIG_FILENAME = 'config.yaml';
 
 export default () => {
+
   const config = yaml.load(
-    readFileSync(join('.', 'config', YAML_CONFIG_FILENAME), 'utf8'),
+    readFileSync( './'+join( 'src' , 'config', YAML_CONFIG_FILENAME), 'utf8'),
   ) as Record<string, any>;
 
   const replaceEnvVariables = (obj: any): any => {
