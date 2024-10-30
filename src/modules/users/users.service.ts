@@ -9,6 +9,7 @@ import { User } from './user.entity';
 import { RegisterUserDto } from './dtos/register-user.dto';
 import { Hasher } from '../..//utils/hasher';
 import { LoginUserDto } from './dtos/login-user.dto';
+import { error } from 'console';
 
 
 function validateEmail(email: string): boolean {
@@ -30,7 +31,7 @@ export class UsersService {
         `The email address is already in use`,
       );
     }
-    if (!validateEmail(registerUserDto.email)) {
+    if (validateEmail(registerUserDto.email)) {
       throw new InternalServerErrorException(
         `invalid email`,
       );
