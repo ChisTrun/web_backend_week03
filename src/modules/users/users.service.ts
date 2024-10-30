@@ -28,7 +28,7 @@ export class UsersService {
   ) { }
 
   async register(registerUserDto: RegisterUserDto): Promise<User> {
-    const existEmail = this.isEmailExisting(registerUserDto.email);
+    const existEmail = await this.isEmailExisting(registerUserDto.email);
     if (existEmail) {
       throw new ConflictException(
         `The email address is already in use`,
