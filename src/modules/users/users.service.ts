@@ -1,7 +1,10 @@
 import {
+  BadRequestException,
+  ConflictException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
@@ -22,17 +25,17 @@ export class UsersService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
     private dataSource: DataSource,
-  ) {}
+  ) { }
 
   async register(registerUserDto: RegisterUserDto): Promise<User> {
     const existEmail = this.isEmailExisting(registerUserDto.email);
     if (existEmail) {
-      throw new InternalServerErrorException(
+      throw new ConflictException(
         `The email address is already in use`,
       );
     }
     if (!validateEmail(registerUserDto.email)) {
-      throw new InternalServerErrorException(
+      throw new BadRequestException(
         `invalid email`,
       );
     }
@@ -61,14 +64,14 @@ export class UsersService {
       },
     });
     if (!user) {
-      throw new InternalServerErrorException(`Wrong email`);
+      throw new UnauthorizedException(`Wrong email`);
     }
     const checkPassword = await Hasher.comparePassword(
       loginUserDto.password,
       user.password,
     );
     if (!checkPassword) {
-      throw new InternalServerErrorException(`Wrong password`);
+      throw new UnauthorizedException(`Wrong password`);
     }
     return user;
   }
