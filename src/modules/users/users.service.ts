@@ -26,12 +26,12 @@ export class UsersService {
 
   async register(registerUserDto: RegisterUserDto): Promise<User> {
     const existEmail = this.isEmailExisting(registerUserDto.email);
-    if (!existEmail) {
+    if (existEmail) {
       throw new InternalServerErrorException(
         `The email address is already in use`,
       );
     }
-    if (validateEmail(registerUserDto.email)) {
+    if (!validateEmail(registerUserDto.email)) {
       throw new InternalServerErrorException(
         `invalid email`,
       );
