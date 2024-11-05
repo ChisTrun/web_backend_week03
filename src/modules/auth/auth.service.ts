@@ -11,28 +11,41 @@ export class AuthService {
         private refreshJwtService: JwtService
     ) { }
 
-    async login(email: string, pass: string,): Promise<{ access_token: string, refesh_token: string }> {
+    async login(email: string, pass: string,): Promise<{ access_token: string, refresh_token: string }> {
         const user = await this.usersService.getUserByEmail(email);
         if (!user) {
             throw new UnauthorizedException();
         }
-
         const checkPassword = await Hasher.comparePassword(pass, user.password);
         if (!checkPassword) {
             throw new UnauthorizedException();
         }
         const payload = { sub: user.id, email: user.email };
         const accessToken = await this.accessJwtService.signAsync(payload)
-        const refeshToken = await this.refreshJwtService.signAsync(payload)
-        const rsp = await this.usersService.updateRefeshToken(user.id, refeshToken)
+        const refreshToken = await this.refreshJwtService.signAsync(payload)
+        const rsp = await this.usersService.updateRefreshToken(user.id, refreshToken)
         if (rsp.error) {
             throw new InternalServerErrorException("error while login to page")
         }
         return {
             access_token: accessToken,
-            refesh_token: refeshToken,
+            refresh_token: refreshToken,
         };
     }
 
-
+    async refreshToken(refreshToken: string): Promise<{ access_token: string }> {
+        try {
+            const payload = await this.refreshJwtService.verifyAsync(refreshToken);
+            const user = await this.usersService.getUserById(payload.id);
+            if (!user == null || refreshToken != user.refeshToken) {
+                throw new UnauthorizedException();
+            }
+            const accessToken = await this.accessJwtService.signAsync({ sub: user.id, email: user.email })
+            return {
+                access_token: accessToken,
+            };
+        } catch {
+            throw new UnauthorizedException();
+        }
+    }
 }

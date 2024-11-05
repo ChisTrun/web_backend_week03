@@ -95,7 +95,16 @@ export class UsersService {
     })
   }
 
-  async updateRefeshToken(id: bigint, refeshToken: string): Promise<{ message?: string, error?: any }> {
+  async getUserById(id: bigint): Promise<User> {
+    return await this.userRepository.findOne({
+      where: {
+        id: id,
+      },
+    })
+  }
+
+
+  async updateRefreshToken(id: bigint, refeshToken: string): Promise<{ message?: string, error?: any }> {
     const user = await this.userRepository.findOne({
       where: {
         id: id

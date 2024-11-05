@@ -28,8 +28,10 @@ export class UsersController {
 
     @UseGuards(AuthGuard)
     @Get('profile')
-    getProfile(@Request() req) {
-        return req.user;
+    async getProfile(@Request() req) {
+        console.log("dasdsdsas")
+        const user = await this.userService.getUserById(req.email)
+        return new ResponseUserDto(user.email, user.createdAt)
     }
 
     @UseGuards(AuthGuard)
