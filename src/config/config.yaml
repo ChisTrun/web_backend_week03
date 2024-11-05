@@ -9,3 +9,9 @@ database:
   username: ${DATABASE_USERNAME}
   password: ${DATABASE_PASSWORD}
 
+
+jwt:
+  secret_key_acceess: ${SECRET_KEY_ACCESS}
+  secret_key_refesh: ${SECRET_KEY_REFESH}
+
+

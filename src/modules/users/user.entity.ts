@@ -6,12 +6,15 @@ export class User {
     @PrimaryGeneratedColumn()
     id: bigint
 
-    @Column({unique: true})
+    @Column({ unique: true })
     email: string
 
     @Column()
     password: string
 
-    @Column({type: 'timestamp', default: () => 'CURRENT_TIMESTAMP'})
+    @Column()
+    refeshToken: string
+
+    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     createdAt: Date
 }

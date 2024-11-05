@@ -12,7 +12,6 @@ import { User } from './user.entity';
 import { RegisterUserDto } from './dtos/register-user.dto';
 import { Hasher } from '../..//utils/hasher';
 import { LoginUserDto } from './dtos/login-user.dto';
-import { error } from 'console';
 
 
 function validateEmail(email: string): boolean {
@@ -39,6 +38,11 @@ export class UsersService {
         `invalid email`,
       );
     }
+    if (registerUserDto.password.length < 8) {
+      throw new BadRequestException(
+        `invalid password`,
+      );
+    }
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -57,23 +61,64 @@ export class UsersService {
     }
   }
 
-  async login(loginUserDto: LoginUserDto): Promise<User> {
+  async logout(id: bigint) {
     const user = await this.userRepository.findOne({
       where: {
-        email: loginUserDto.email,
+        id: id
       },
     });
     if (!user) {
-      throw new UnauthorizedException(`Wrong email`);
+      throw new NotFoundException(`user not found`);
     }
-    const checkPassword = await Hasher.comparePassword(
-      loginUserDto.password,
-      user.password,
-    );
-    if (!checkPassword) {
-      throw new UnauthorizedException(`Wrong password`);
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      user.refeshToken = null
+      await queryRunner.manager.save(user);
+      await queryRunner.commitTransaction();
+      return { message: 'Logout successful' };
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw new InternalServerErrorException(`Failed to logout: ${error.message}`);
+    } finally {
+      await queryRunner.release();
     }
-    return user;
+  }
+
+  async getUserByEmail(email: string): Promise<User> {
+    return await this.userRepository.findOne({
+      where: {
+        email: email,
+      },
+    })
+  }
+
+  async updateRefeshToken(id: bigint, refeshToken: string): Promise<{ message?: string, error?: any }> {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: id
+      }
+    })
+    if (!user) {
+      return { error: "user not found" }
+    }
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      user.refeshToken = refeshToken
+      await queryRunner.manager.save(user);
+      await queryRunner.commitTransaction();
+      return { message: 'update refeshToken successful' };
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      return { error: error }
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async isEmailExisting(email: string): Promise<boolean> {
