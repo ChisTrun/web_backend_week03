@@ -2,6 +2,7 @@ import { Injectable, InternalServerErrorException, UnauthorizedException } from 
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { Hasher } from 'src/utils/hasher';
+import { ResponseUserDto } from '../users/dtos/response-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -11,7 +12,7 @@ export class AuthService {
         private refreshJwtService: JwtService
     ) { }
 
-    async login(email: string, pass: string,): Promise<{ access_token: string, refresh_token: string }> {
+    async login(email: string, pass: string,): Promise<{ access_token: string, refresh_token: string, user: ResponseUserDto }> {
         const user = await this.usersService.getUserByEmail(email);
         if (!user) {
             throw new UnauthorizedException();
@@ -30,6 +31,7 @@ export class AuthService {
         return {
             access_token: accessToken,
             refresh_token: refreshToken,
+            user: new ResponseUserDto( user.email,user.createdAt)
         };
     }
 
